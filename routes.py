@@ -23,7 +23,8 @@ async def list_letters(request: Request):
     cursor = request.app.mongodb["letters"].find().sort("timestamp", -1)
     async for document in cursor:
         # Map _id to id for frontend compatibility if needed, though Pydantic handles aliasing
-        document["id"] = str(document["_id"])
+        document["_id"] = str(document["_id"])
+        document["id"] = document["_id"]
         letters.append(document)
     return letters
 
