@@ -8,6 +8,9 @@ router = APIRouter()
 @router.post("/", response_description="Add new letter", response_model=LetterModel)
 async def create_letter(request: Request, letter: LetterModel = Body(...)):
     letter = jsonable_encoder(letter)
+    # Remove _id if it is None so MongoDB can generate a unique one
+    if "_id" in letter and letter["_id"] is None:
+        del letter["_id"]
     new_letter = await request.app.mongodb["letters"].insert_one(letter)
     created_letter = await request.app.mongodb["letters"].find_one({"_id": new_letter.inserted_id})
     return created_letter
