@@ -13,6 +13,8 @@ async def create_letter(request: Request, letter: LetterModel = Body(...)):
         del letter["_id"]
     new_letter = await request.app.mongodb["letters"].insert_one(letter)
     created_letter = await request.app.mongodb["letters"].find_one({"_id": new_letter.inserted_id})
+    if created_letter:
+        created_letter["_id"] = str(created_letter["_id"])
     return created_letter
 
 @router.get("/", response_description="List all letters", response_model=List[LetterModel])
